@@ -4,15 +4,15 @@ GPlayWeb: A Web interface for GPlayCli
 Installation (consider using a virtualenv)
 ------------------------------------------
 
--First of all, you need [GPlayCli](https://github.com/matlink/gplaycli).
--Then, clone this repo : 
+- First of all, you need [GPlayCli](https://github.com/matlink/gplaycli).
+- Then, clone this repo : 
 
-	git clone https://github.com/matlink/gplayweb
+		git clone https://github.com/matlink/gplayweb
 
--Copy `gplaycli` in `gplayweb`'s folder to make this module available for `gplayweb`.
--Install `tornado` with `pip` :
+- Copy `gplaycli` in `gplayweb`'s folder to make this module available for `gplayweb`.
+- Install `tornado` with `pip` :
 	
-	pip install tornado
+		pip install tornado
 
 Usage
 -----
