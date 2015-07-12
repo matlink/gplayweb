@@ -13,11 +13,9 @@ Installation (consider using a virtualenv)
 - Then, clone this repo recursively for submodules (gplaycli) : 
 
 		git clone https://github.com/matlink/gplayweb --recursive 
-
-- Copy `gplaycli` in `gplayweb`'s folder to make this module available for `gplayweb`.
-- Install `tornado` with `pip` :
+- Install requirements with `pip` :
 	
-		pip install tornado
+		pip install -r requirements.txt
 
 Usage
 -----
