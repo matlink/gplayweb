@@ -5,7 +5,7 @@ import os
 import ConfigParser
 from gplaycli.gplaycli import GPlaycli
 
-CONFFILE=os.path.dirname(os.path.abspath(__file__))+"gplayweb.conf"
+CONFFILE=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf"
 
 class MainHandler(tornado.web.RequestHandler):
 	def __init__(self, *args, **kwargs):
@@ -45,7 +45,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 	# Templates
 	def get_template_path(self):
-		return os.path.dirname(os.path.abspath(__file__))+"templates"
+		return os.path.dirname(os.path.abspath(__file__))+"/templates"
 
 	def render(self,mode, items):
 		super(MainHandler,self).render(mode+".html", title="GPlayWeb", ROOT=self.root_url, items=items)
