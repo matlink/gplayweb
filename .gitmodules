@@ -1,0 +1,3 @@
+[submodule "gplaycli"]
+	path = gplaycli
+	url = git@github.com:matlink/gplaycli
