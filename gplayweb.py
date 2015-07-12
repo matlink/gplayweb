@@ -2,25 +2,22 @@
 import tornado.ioloop
 import tornado.web
 import os
-import ConfigParser
+import ConfigParser, argparse
 from gplaycli.gplaycli import GPlaycli
 
-CONFFILE=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf"
-
+# Main handler
 class MainHandler(tornado.web.RequestHandler):
 	def __init__(self, *args, **kwargs):
 		tornado.web.RequestHandler.__init__(self,*args, **kwargs)
-		self.cli = GPlaycli(CONFFILE)
+		# Parsing conffile
+		self.cli = GPlaycli(cli_args.CONFFILE)
+		# Connect to API
 		self.cli.connect_to_googleplay_api()
-		conffile=CONFFILE
-		self.configparser = ConfigParser.ConfigParser()
-		self.configparser.read(conffile)
-		config = self.configparser.items("Server")
-		config_dict = dict()
-		for key, value in config:
-			config_dict[key] = value
-		self.apk_folder = config_dict['folder']
-		self.root_url = config_dict['root_url']
+		# Get conf
+		# Where apk are stored
+		self.apk_folder = config['folder']
+		# Root of the HTTP URL
+		self.root_url = config['root_url']
 
 	# Routes
 	def get(self):
@@ -52,9 +49,12 @@ class MainHandler(tornado.web.RequestHandler):
 	
 
 	# Core
+	# Show the list of downloaded apks
 	def list(self):
 		results = self.cli.list_folder_apks(self.apk_folder)
 		self.render('list', results)
+
+	# Search an apk by string
 	def search(self):
 		search_string = self.get_argument('name', None)
 		if search_string == None:
@@ -66,6 +66,7 @@ class MainHandler(tornado.web.RequestHandler):
 			results = [["No Result"]]
 		self.render('search', results)
 
+	# Download an apk by codename to the server (org.mozilla.firefox)
 	def download(self):
 		package = self.get_argument('name', None)
 		if package == None:
@@ -75,12 +76,14 @@ class MainHandler(tornado.web.RequestHandler):
 		self.cli.download_packages([package])
 		self.redirect('page=list')
 
+	# Remove the apk from the folder
 	def remove(self):
 		filename = self.get_argument('name', None)
 		filename = os.path.basename(filename)
 		os.remove(os.path.join(self.apk_folder, filename))
 		self.redirect('page=list')
 	
+	# Download the available apk from the server
 	def download_from_server(self):
 		filename = self.get_argument('name', None)
 		base_filename = os.path.basename(filename)
@@ -96,14 +99,18 @@ class MainHandler(tornado.web.RequestHandler):
 				self.write(data)
 		self.finish()
 
-conffile=CONFFILE
+# Parsing CLI arguments
+parser = argparse.ArgumentParser(description="A web interface for GPlayCli")
+parser.add_argument('-c','--config',action='store',dest='CONFFILE',metavar="CONF_FILE",nargs=1,
+		type=str,default=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf",
+		help="Use a different config file than gplayweb.conf")
+cli_args = parser.parse_args()
 configparser = ConfigParser.ConfigParser()
-configparser.read(conffile)
-config = configparser.items("Server")
-config_dict = dict()
-for key, value in config:
-	config_dict[key] = value
-config = config_dict
+configparser.read(cli_args.CONFFILE)
+config_list = configparser.items("Server")
+config = dict()
+for key, value in config_list:
+	config[key] = value
 
 settings = {
 	"static_path": os.path.join(os.path.dirname(__file__), "static"),
