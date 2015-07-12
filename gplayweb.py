@@ -16,6 +16,8 @@ class MainHandler(tornado.web.RequestHandler):
 		# Get conf
 		# Where apk are stored
 		self.apk_folder = config['folder']
+		if not os.path.isdir(self.apk_folder):
+			os.mkdir(self.apk_folder)
 		# Root of the HTTP URL
 		self.root_url = config['root_url']
 
