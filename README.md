@@ -8,9 +8,9 @@ Screenshot(s)
 
 Installation (consider using a virtualenv)
 ------------------------------------------
+It requires [GPlayCli](https://github.com/matlink/gplaycli), but will be added automatically if you clone this repo recursively.
 
-- First of all, you need [GPlayCli](https://github.com/matlink/gplaycli).
-- Then, clone this repo recursively for submodules (gplaycli) : 
+- Clone this repo recursively for submodules (gplaycli) : 
 
 		$ git clone https://github.com/matlink/gplayweb --recursive 
 - Install `gplaycli` requirements : 
