@@ -13,8 +13,8 @@
     		{#% for detail in item %#}
     			<td>{{ item }}</td>
     		{#% end %#} 
-    			<td><a href="{{ROOT}}?page=downloadfromserver&amp;name={{item[0]}}"><span class="glyphicon glyphicon-download"></span></a></td>
-    			<td><a href="{{ROOT}}?page=remove&amp;name={{item[0]}}"><span class="glyphicon glyphicon-trash"></span></a></td>
+    			<td><a href="{{ROOT}}?page=downloadfromserver&amp;name={{item}}"><span class="glyphicon glyphicon-download"></span></a></td>
+    			<td><a href="{{ROOT}}?page=remove&amp;name={{item}}"><span class="glyphicon glyphicon-trash"></span></a></td>
     		</tr></tbody>
     	{% end %}
     </table>
