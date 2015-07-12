@@ -12,10 +12,16 @@ Installation (consider using a virtualenv)
 - First of all, you need [GPlayCli](https://github.com/matlink/gplaycli).
 - Then, clone this repo recursively for submodules (gplaycli) : 
 
-		git clone https://github.com/matlink/gplayweb --recursive 
-- Install requirements with `pip` :
+		$ git clone https://github.com/matlink/gplayweb --recursive 
+- Install `gplaycli` requirements : 
+
+ 		# apt-get install python-dev python-pip libffi-dev
+		$ pip install -r gplaycli/requirements.txt
+
+- Install `gplayweb` requirements with `pip` :
 	
-		pip install -r requirements.txt
+		$ pip install -r requirements.txt
+		
 
 Usage
 -----
