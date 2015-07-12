@@ -44,8 +44,8 @@ class MainHandler(tornado.web.RequestHandler):
 	def get_template_path(self):
 		return os.path.dirname(os.path.abspath(__file__))+"/templates"
 
-	def render(self,mode, items):
-		super(MainHandler,self).render(mode+".html", title="GPlayWeb", ROOT=self.root_url, items=items)
+	def render(self, mode, items, **kwargs):
+		super(MainHandler,self).render(mode+".html", title="GPlayWeb", ROOT=self.root_url, items=items, **kwargs)
 	
 
 	# Core
@@ -64,7 +64,7 @@ class MainHandler(tornado.web.RequestHandler):
 		results = self.cli.search(list(),search_string,number)
 		if results == None:
 			results = [["No Result"]]
-		self.render('search', results)
+		self.render('search', results, string=search_string, number=number)
 
 	# Download an apk by codename to the server (org.mozilla.firefox)
 	def download(self):

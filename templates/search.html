@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="panel-heading form-inline">
-	<h3><span class="glyphicon glyphicon-search"> Results of the search </span></h3>
+	<h3><span class="glyphicon glyphicon-search"> {{number}} first results of the search : {{string}}</span></h3>
 </div>
     <table class="table table-striped">
         {% for position,item in enumerate(items) %}
