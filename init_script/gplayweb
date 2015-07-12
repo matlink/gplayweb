@@ -1,0 +1,51 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides: gplayweb
+# Required-Start: nginx
+# Required-Stop:
+# Should-Start:
+# Default-Start: 2 3 4 5
+# Default-Stop:
+# Short-Description: Web interface for gplaycli
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+PROGRAM_HOME=/home/git/gplayweb
+PIDFILE=/tmp/gplayweb.pid
+PROG_NAME=gplayweb.py
+DAEMON=$PROGRAM_HOME/$PROG_NAME
+LOGFILE=/tmp/gplayweb.log
+CONFFILE=$PROGRAM_HOME/gplayweb.conf
+ARGUMENTS="-c $CONFFILE"
+USER=git
+# See how we were called.
+case "$1" in
+  start)
+        echo -n "Starting ${PROGRAM} ..."
+        #### Commands to start the process running
+        cd $PROGRAM_HOME
+        start-stop-daemon --start -c $USER --quiet --pidfile $PIDFILE --exec $DAEMON & >$LOGFILE 2>&1 -- $ARGUMENTS
+        echo $(pgrep -f $PROG_NAME) > $PIDFILE
+        echo
+        ;;
+  stop)
+        echo -n "Shutting down $PROGRAM ..."
+        kill -9 $(cat $PIDFILE)
+        rm -f $PIDFILE
+        echo
+        ;;
+  status)
+        status_of_proc -p $PIDFILE "$PROG_NAME" "gplayweb" && exit 0 || exit $?
+        ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+esac
+
+exit 0
