@@ -101,6 +101,15 @@ class MainHandler(tornado.web.RequestHandler):
 				self.write(data)
 		self.finish()
 
+def default_params():
+	config = {
+		'ip': '0.0.0.0',
+		'port': '8888',
+		'root_url': '/',
+		'folder': 'repo',
+	}
+	return config
+
 # Parsing CLI arguments
 parser = argparse.ArgumentParser(description="A web interface for GPlayCli")
 parser.add_argument('-c','--config',action='store',dest='CONFFILE',metavar="CONF_FILE",nargs=1,
@@ -110,7 +119,9 @@ cli_args = parser.parse_args()
 configparser = ConfigParser.ConfigParser()
 configparser.read(cli_args.CONFFILE)
 config_list = configparser.items("Server")
-config = dict()
+# Get default params
+config = default_params()
+# Override default params
 for key, value in config_list:
 	config[key] = value
 
