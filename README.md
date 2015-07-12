@@ -8,16 +8,20 @@ Screenshot(s)
 
 Installation (consider using a virtualenv)
 ------------------------------------------
+It requires [GPlayCli](https://github.com/matlink/gplaycli), but will be added automatically if you clone this repo recursively.
 
-- First of all, you need [GPlayCli](https://github.com/matlink/gplaycli).
-- Then, clone this repo : 
+- Clone this repo recursively for submodules (gplaycli) : 
 
-		git clone https://github.com/matlink/gplayweb
+		$ git clone https://github.com/matlink/gplayweb --recursive 
+- Install `gplaycli` requirements : 
 
-- Copy `gplaycli` in `gplayweb`'s folder to make this module available for `gplayweb`.
-- Install `tornado` with `pip` :
+ 		# apt-get install python-dev python-pip libffi-dev
+		$ pip install -r gplaycli/requirements.txt
+
+- Install `gplayweb` requirements with `pip` :
 	
-		pip install tornado
+		$ pip install -r requirements.txt
+		
 
 Usage
 -----
