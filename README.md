@@ -10,9 +10,9 @@ Installation (consider using a virtualenv)
 ------------------------------------------
 
 - First of all, you need [GPlayCli](https://github.com/matlink/gplaycli).
-- Then, clone this repo : 
+- Then, clone this repo recursively for submodules (gplaycli) : 
 
-		git clone https://github.com/matlink/gplayweb
+		git clone https://github.com/matlink/gplayweb --recursive 
 
 - Copy `gplaycli` in `gplayweb`'s folder to make this module available for `gplayweb`.
 - Install `tornado` with `pip` :
