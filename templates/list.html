@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="panel-heading form-inline">
+	<h3><span class="glyphicon glyphicon-list"> Listing </span></h3>
+</div>
+    <table class="table table-striped .table-bordered .table-hover">
+    	<thead><tr>
+    		<th>Filename</th><th>Version Code</th><th>Download from server</th><th>Remove</th>
+    	</tr></thead>
+        {% for position,item in enumerate(items) %}
+    		<tbody><tr>
+    		{% for detail in item %}
+    			<td>{{ detail }}</td>
+    		{% end %} 
+    			<td><a href="{{ROOT}}?page=downloadfromserver&amp;name={{item[0]}}"><span class="glyphicon glyphicon-download"></span></a></td>
+    			<td><a href="{{ROOT}}?page=remove&amp;name={{item[0]}}"><span class="glyphicon glyphicon-trash"></span></a></td>
+    		</tr></tbody>
+    	{% end %}
+    </table>
+{% end %}

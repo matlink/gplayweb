@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="panel-heading form-inline">
+	<h3><span class="glyphicon glyphicon-search"> Results of the search </span></h3>
+</div>
+    <table class="table table-striped">
+        {% for position,item in enumerate(items) %}
+        	{% if position == 0 %}
+				<thead><tr>
+					{% for detail in item %}
+						<th>{{ detail }}</th>
+					{% end %} 
+						<th> Download to server </th>
+				</tr></thead>
+            {% else %}
+            	<tbody><tr>
+            	{% for detail in item %}
+            		<td>{{ detail }}</td>
+        		{% end %} 
+        		<td><a href="{{ROOT}}?page=download&amp;name={{item[5]}}"><span class="glyphicon glyphicon-download-alt"></span></a></td>
+            	</tr></tbody>
+			{% end %}
+        {% end %}
+    </table>
+{% end %}

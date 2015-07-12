@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+        <title>GPlayWeb</title>
+        <!--
+         *******************************************************************************
+         * "THE BEER-WARE LICENSE" (Revision 42):
+         * <matlink@matlink.fr> and friends wrote this file.  As long as you retain this
+         * notice you can do whatever you want with this stuff. If we meet some day, and
+         * you think this stuff is worth it, you can buy us a beer in return. 
+         * Matlink & Co.
+         *******************************************************************************
+        -->
+        <link rel="stylesheet" href="{{ static_url("css/bootstrap.min.css") }}" />
+    	<style>
+        .form-horizontal{
+            padding-top: 5px;
+        }
+        .container{
+            padding: 0;
+        }
+    	</style>
+	</head>
+	<body>
+        <header id="page_header">
+            <div class="navbar navbar-default">
+                <div class="container-fluid">
+                    <ul id="main-navbar" class="nav navbar-nav">
+                        <li><a href="" class="navbar-brand">GPlayWeb: A web interface for GPlaycli</a></li>
+                        <li><a href="{{ROOT}}?page=list"><span class="glyphicon glyphicon-list">  List</span></a></li>
+                        <li><a href="{{ROOT}}?page=search"><span class="glyphicon glyphicon-search">  Search</span></a></li>
+                        <li><a href="{{ROOT}}?page=download"><span class="glyphicon glyphicon-download-alt">  Download</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        <div class="panel panel-default container">
+        {% block body %}
+        {% end %}
+        </div>
+    </body>
+</html>

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="panel-heading form-inline">
+	<h3><span class="glyphicon glyphicon-search"> Searching </span></h3>
+</div>
+ <form class="form-horizontal" role="form" method="GET">
+ <div class="form-group" style="display:none;">
+      <input type="text" class="form-control" name="page" placeholder="search" value="search">
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="name">Search:</label>
+    <div class="col-sm-2">
+      <input type="text" class="form-control" name="name" placeholder="firefox">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="number">Number of results:</label>
+    <div class="col-sm-2">
+      <input type="number" class="form-control" name="number" value="10">
+    </div>
+  </div>
+    <div class="panel-footer">
+	  <div class="form-group">
+	    <div class="col-sm-offset-2 col-sm-2">
+	      <button type="submit" class="btn btn-primary">Submit</button>
+	    </div>
+	  </div>
+    </div>
+	</form>
+{% end %}

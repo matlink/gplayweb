@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="panel-heading form-inline">
+  <h3><span class="glyphicon glyphicon-download-alt"> Download </span></h3>
+</div>
+
+ <form class="form-horizontal" role="form" method="GET">
+ <div class="form-group" style="display:none;">
+      <input type="text" class="form-control" name="page" value="download">
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="name">Package:</label>
+    <div class="col-sm-2">
+      <input type="text" class="form-control" name="name" placeholder="org.mozilla.firefox">
+    </div>
+  </div>
+  <div class="panel-footer">
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-2">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </form>
+  </div>
+{% end %}
