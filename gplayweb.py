@@ -1,7 +1,6 @@
 #! /usr/bin/python2
 import tornado.ioloop
 import tornado.web
-from tornado.options import define, options
 import os
 import ConfigParser
 from gplaycli.gplaycli import GPlaycli
@@ -46,7 +45,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 	# Templates
 	def get_template_path(self):
-		return "templates"
+		return os.path.dirname(os.path.abspath(__file__))+"templates"
 
 	def render(self,mode, items):
 		super(MainHandler,self).render(mode+".html", title="GPlayWeb", ROOT=self.root_url, items=items)
