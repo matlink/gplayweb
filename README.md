@@ -21,6 +21,8 @@ It requires [GPlayCli](https://github.com/matlink/gplaycli), but will be added a
 - Install `gplayweb` requirements with `pip` :
 	
 		$ pip install -r requirements.txt
+- Copy `gplayweb.conf.example` to `gplayweb.conf` and change the settings (you can comment unwanted lines out with #)
+- If you plan to add compatibility with F-Droid repo, ensure that you use [my fork of fdroidserver](https://github.com/matlink/fdroidserver) since the original, for now, doesn't support call from another Python script (it's only usable via command line)
 		
 
 Usage
