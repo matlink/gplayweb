@@ -130,6 +130,7 @@ class MainHandler(tornado.web.RequestHandler):
 		try:
 			self.fdroid_update.create_metadata_and_update()
 			self.customize_metadata()
+			self.fdroid_update.create_metadata_and_update()
 		except:
 			traceback.print_exc(file=sys.stdout)
 		# We return to our original path
