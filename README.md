@@ -4,7 +4,7 @@ GPlayWeb: A Web interface for GPlayCli
 Screenshot(s)
 -------------
 
-![alt](https://pic.matlink.fr/Uc0u57eC/u8iQf5Mc)
+![alt](https://pic.matlink.fr/8RApkXw7/QPjlfSbX)
 
 Installation (consider using a virtualenv)
 ------------------------------------------
