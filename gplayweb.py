@@ -28,6 +28,9 @@ class MainHandler(tornado.web.RequestHandler):
 			self.fdroid_script_dir = config['fdroid_script_dir']
 			sys.path.append(self.fdroid_script_dir)
 			self.fdroid_update = __import__('fdroidserver.update', fromlist=['create_metadata_and_update'])
+			# If custom category is specified
+			if 'fdroid_custom_category' in config:
+				self.fdroid_custom_category = config['fdroid_custom_category']
 
 	# Routes
 	def get(self):
@@ -125,11 +128,25 @@ class MainHandler(tornado.web.RequestHandler):
 		os.chdir(self.fdroid_repo_dir)
 		# We update fdroidserver repo
 		try:
-			self.fdroid_update.create_metadata_and_update(path=self.fdroid_repo_dir)
+			self.fdroid_update.create_metadata_and_update()
+			self.customize_metadata()
 		except:
 			traceback.print_exc(file=sys.stdout)
 		# We return to our original path
 		os.chdir(current_dir)
+
+	# Add custom category to downloaded apps
+	def customize_metadata(self):
+		for metadir, dirnames, metafiles in os.walk('metadata'):
+			for metafile in metafiles:
+				if metafile.endswith('.txt'):
+					metafile = os.path.join('metadata',metafile)
+					buff = open(metafile, 'a+')
+					if 'Categories:' not in buff.read():
+						buff.write('Categories:'+self.fdroid_custom_category+'\n')
+					buff.close()
+
+
 
 def default_params():
 	config = {
@@ -137,6 +154,7 @@ def default_params():
 		'port': '8888',
 		'root_url': '/',
 		'folder': 'repo',
+		'fdroid_custom_category': 'GPlayWeb',
 	}
 	return config
 
