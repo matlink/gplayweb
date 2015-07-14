@@ -17,7 +17,7 @@ class MainHandler(tornado.web.RequestHandler):
 			os.mkdir(self.apk_folder)
 		# Root of the HTTP URL
 		self.root_url = config['root_url']
-		self.cache_file = '.cache'
+		self.cache_file = os.path.dirname(os.path.abspath(__file__))+'/.cache'
 
 		self.fdroid = False
 		# FDroid support is asked
