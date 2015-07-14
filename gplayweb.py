@@ -1,6 +1,6 @@
 #! /usr/bin/python2
-import sys, os, traceback, ConfigParser, argparse
-import tornado.ioloop, tornado.web, tornado.gen
+import sys, os, traceback, ConfigParser, argparse, multiprocessing
+import tornado.ioloop, tornado.web
 from gplaycli.gplaycli import GPlaycli
 
 
@@ -88,7 +88,7 @@ class MainHandler(tornado.web.RequestHandler):
 		self.cli.set_download_folder(self.apk_folder)
 		self.cli.download_packages([package])
 		# Update fdroid repo if asked
-		self.updateFdroidRepo()
+		self.multiproc_update_fdroid()
 		self.redirect('page=list')
 
 	# Remove the apk from the folder
@@ -97,7 +97,7 @@ class MainHandler(tornado.web.RequestHandler):
 		filename = os.path.basename(filename)
 		os.remove(os.path.join(self.apk_folder, filename))
 		# Update fdroid repo if asked
-		self.updateFdroidRepo()
+		self.multiproc_update_fdroid()
 		self.redirect('page=list')
 	
 	# Download the available apk from the server
@@ -116,7 +116,12 @@ class MainHandler(tornado.web.RequestHandler):
 				self.write(data)
 		self.finish()
 
-	@tornado.gen.coroutine
+
+	def multiproc_update_fdroid(self):
+		queue = multiprocessing.Queue()
+		p = multiprocessing.Process(target=self.updateFdroidRepo)
+		p.start()
+
 	def updateFdroidRepo(self):
 		# If Fdroid not asked
 		if not self.fdroid:
