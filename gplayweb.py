@@ -1,9 +1,8 @@
 #! /usr/bin/python2
-import tornado.ioloop
-import tornado.web
-import os
-import ConfigParser, argparse
+import sys, os, traceback, ConfigParser, argparse
+import tornado.ioloop, tornado.web, tornado.gen
 from gplaycli.gplaycli import GPlaycli
+
 
 # Main handler
 class MainHandler(tornado.web.RequestHandler):
@@ -20,6 +19,15 @@ class MainHandler(tornado.web.RequestHandler):
 			os.mkdir(self.apk_folder)
 		# Root of the HTTP URL
 		self.root_url = config['root_url']
+
+		self.fdroid = False
+		# FDroid support is asked
+		if 'fdroid_repo_dir' in config:
+			self.fdroid=True
+			self.fdroid_repo_dir = config['fdroid_repo_dir']
+			self.fdroid_script_dir = config['fdroid_script_dir']
+			sys.path.append(self.fdroid_script_dir)
+			self.fdroid_update = __import__('fdroidserver.update', fromlist=['create_metadata_and_update'])
 
 	# Routes
 	def get(self):
@@ -76,6 +84,8 @@ class MainHandler(tornado.web.RequestHandler):
 			return
 		self.cli.set_download_folder(self.apk_folder)
 		self.cli.download_packages([package])
+		# Update fdroid repo if asked
+		self.updateFdroidRepo()
 		self.redirect('page=list')
 
 	# Remove the apk from the folder
@@ -83,6 +93,8 @@ class MainHandler(tornado.web.RequestHandler):
 		filename = self.get_argument('name', None)
 		filename = os.path.basename(filename)
 		os.remove(os.path.join(self.apk_folder, filename))
+		# Update fdroid repo if asked
+		self.updateFdroidRepo()
 		self.redirect('page=list')
 	
 	# Download the available apk from the server
@@ -101,6 +113,24 @@ class MainHandler(tornado.web.RequestHandler):
 				self.write(data)
 		self.finish()
 
+	@tornado.gen.coroutine
+	def updateFdroidRepo(self):
+		# If Fdroid not asked
+		if not self.fdroid:
+			return
+
+		# We change dir path cause Fdroid does not support
+		# remote update, it needs to be in the same folder
+		current_dir = os.path.dirname(os.path.realpath(__file__))
+		os.chdir(self.fdroid_repo_dir)
+		# We update fdroidserver repo
+		try:
+			self.fdroid_update.create_metadata_and_update(path=self.fdroid_repo_dir)
+		except:
+			traceback.print_exc(file=sys.stdout)
+		# We return to our original path
+		os.chdir(current_dir)
+
 def default_params():
 	config = {
 		'ip': '0.0.0.0',
@@ -110,33 +140,50 @@ def default_params():
 	}
 	return config
 
-# Parsing CLI arguments
-parser = argparse.ArgumentParser(description="A web interface for GPlayCli")
-parser.add_argument('-c','--config',action='store',dest='CONFFILE',metavar="CONF_FILE",nargs=1,
-		type=str,default=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf",
-		help="Use a different config file than gplayweb.conf")
-cli_args = parser.parse_args()
-configparser = ConfigParser.ConfigParser()
-configparser.read(cli_args.CONFFILE)
-config_list = configparser.items("Server")
-# Get default params
-config = default_params()
-# Override default params
-for key, value in config_list:
-	config[key] = value
+def check_config(config):
+	if ('fdroid_repo_dir' in config and 'fdroid_script_dir' not in config)\
+		or ('fdroid_script_dir' in config and 'fdroid_repo_dir' not in config):
+		return False, "Need to define both 'fdroid_repo_dir' and 'fdroid_script_dir' to support Fdroid server update! "
+	return True, "Success"
 
-settings = {
-	"static_path": os.path.join(os.path.dirname(__file__), "static"),
-	"root_url": r""+config['root_url'],
-	"port": r""+config['port'],
-	"ip": r""+config['ip']
-}
-application = tornado.web.Application([
-	(settings['root_url'], MainHandler),
-	(r"/static/", tornado.web.StaticFileHandler,
-	 dict(path=settings['static_path'])),
-], **settings)
+def main():
+	global cli_args, config
+	# Parsing CLI arguments
+	parser = argparse.ArgumentParser(description="A web interface for GPlayCli")
+	parser.add_argument('-c','--config',action='store',dest='CONFFILE',metavar="CONF_FILE",nargs=1,
+			type=str,default=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf",
+			help="Use a different config file than gplayweb.conf")
+	cli_args = parser.parse_args()
+	configparser = ConfigParser.ConfigParser()
+	configparser.read(cli_args.CONFFILE)
+	config_list = configparser.items("Server")
 
-if __name__ == "__main__":
+	# Get default params
+	config = default_params()
+	# Override default params
+	for key, value in config_list:
+		config[key] = value
+
+	status, errorString = check_config(config)
+	# If something went wrong
+	if not status:
+		print errorString
+		return
+
+	settings = {
+		"static_path": os.path.join(os.path.dirname(__file__), "static"),
+		"root_url": r""+config['root_url'],
+		"port": r""+config['port'],
+		"ip": r""+config['ip']
+	}
+	application = tornado.web.Application([
+		(settings['root_url'], MainHandler),
+		(r"/static/", tornado.web.StaticFileHandler,
+		 dict(path=settings['static_path'])),
+	], **settings)
+
 	application.listen(settings['port'],settings['ip'])
 	tornado.ioloop.IOLoop.current().start()
+
+if __name__ == "__main__":
+	main()
