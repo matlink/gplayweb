@@ -2,17 +2,26 @@
 
 {% block body %}
 <div class="panel-heading form-inline">
-	<h3><span class="glyphicon glyphicon-list"> Listing </span></h3>
+	<h3><span class="glyphicon glyphicon-list"> Listing {{len(items)}} apks</span></h3>
 </div>
     <table class="table table-striped .table-bordered .table-hover">
     	<thead><tr>
-    		<th>Filename</th>{#<th>Version Code</th>#}<th>Download from server</th><th>Remove</th>
+    		<th>Title</th>
+            <th>Creator</th>
+            <th>Size</th>
+            <th>Downloads</th>
+            <th>Last Update</th>
+            <th>AppID</th>
+            <th>Version</th>
+            <th>Rating</th>
+            <th>Download from server</th>
+            <th>Remove</th>
     	</tr></thead>
-        {% for position,item in enumerate(items) %}
+        {% for item in items %}
     		<tbody><tr>
-    		{#% for detail in item %#}
-    			<td>{{ item }}</td>
-    		{#% end %#} 
+    		{% for detail in items[item] %}
+    			<td>{{ detail }}</td>
+    		{% end %} 
     			<td><a href="{{ROOT}}?page=downloadfromserver&amp;name={{item}}"><span class="glyphicon glyphicon-download"></span></a></td>
     			<td><a href="{{ROOT}}?page=remove&amp;name={{item}}"><span class="glyphicon glyphicon-trash"></span></a></td>
     		</tr></tbody>

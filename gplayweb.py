@@ -1,4 +1,5 @@
 #! /usr/bin/python2
+# -*- coding: utf-8 -*-
 import sys, os, traceback, ConfigParser, argparse, multiprocessing
 import tornado.ioloop, tornado.web
 from gplaycli.gplaycli import GPlaycli
@@ -8,10 +9,7 @@ from gplaycli.gplaycli import GPlaycli
 class MainHandler(tornado.web.RequestHandler):
 	def __init__(self, *args, **kwargs):
 		tornado.web.RequestHandler.__init__(self,*args, **kwargs)
-		# Parsing conffile
-		self.cli = GPlaycli(cli_args.CONFFILE)
-		# Connect to API
-		self.cli.connect_to_googleplay_api()
+		self.cli = cli
 		# Get conf
 		# Where apk are stored
 		self.apk_folder = config['folder']
@@ -19,6 +17,7 @@ class MainHandler(tornado.web.RequestHandler):
 			os.mkdir(self.apk_folder)
 		# Root of the HTTP URL
 		self.root_url = config['root_url']
+		self.cache_file = '.cache'
 
 		self.fdroid = False
 		# FDroid support is asked
@@ -36,7 +35,7 @@ class MainHandler(tornado.web.RequestHandler):
 	def get(self):
 		page = self.get_argument('page',None)
 		if page == None:
-			self.redirect('page=list')
+			self.redirect('list')
 		elif page == 'list':
 			self.list()
 		elif page == 'search':
@@ -47,11 +46,13 @@ class MainHandler(tornado.web.RequestHandler):
 			self.remove()
 		elif page == 'downloadfromserver':
 			self.download_from_server()
+		elif page == 'emptycache':
+			self.empty_cache()
 		else:
 			return
 
 	def redirect(self,url,permanent=False,status=None):
-		super(MainHandler,self).redirect(self.root_url+"?"+url, permanent, status)
+		super(MainHandler,self).redirect(self.root_url+"?page="+url, permanent, status)
 
 	# Templates
 	def get_template_path(self):
@@ -65,7 +66,38 @@ class MainHandler(tornado.web.RequestHandler):
 	# Show the list of downloaded apks
 	def list(self):
 		results = self.cli.list_folder_apks(self.apk_folder)
-		self.render('list', results)
+		cached_infos = self.get_infos(results)
+		self.render('list', cached_infos)
+
+	# ask gplay api if infos are not cached
+	def get_infos(self, apks):
+		apks = map(self.kick_extension, apks)
+		separator = ";"
+		# Ensure the cache file exists
+		open(self.cache_file,'a+')
+		cached_infos = dict()
+		for line in open(self.cache_file).read().splitlines():
+			infos = line.split(separator)
+			apk_name = infos[0]
+			if apk_name not in apks:
+				continue
+			infos.pop(0)
+			cached_infos[apk_name] = infos 
+		apks = set(apks)-set(cached_infos.keys())
+		details = self.cli.get_bulk_details(apks)
+
+		buff = open(self.cache_file,'a')
+		for apk in details:
+			if details[apk][0]=='':
+				details[apk][0]=apk
+			buff.write(apk+separator+separator.join(details[apk]).encode('utf-8')+'\n')
+		buff.close()
+		cached_infos.update(details)
+		return cached_infos
+
+	def empty_cache(self):
+		os.remove(self.cache_file)
+		self.redirect('list')
 
 	# Search an apk by string
 	def search(self):
@@ -74,7 +106,7 @@ class MainHandler(tornado.web.RequestHandler):
 			self.render('form_search', None)
 			return
 		number = self.get_argument('number',10)
-		results = self.cli.search(list(),search_string,number)
+		results = self.cli.search(list(),search_string,number, free_only=False)
 		if results == None:
 			results = [["No Result"]]
 		self.render('search', results, string=search_string, number=number)
@@ -89,21 +121,21 @@ class MainHandler(tornado.web.RequestHandler):
 		self.cli.download_packages([package])
 		# Update fdroid repo if asked
 		self.multiproc_update_fdroid()
-		self.redirect('page=list')
+		self.redirect('list')
 
 	# Remove the apk from the folder
 	def remove(self):
 		filename = self.get_argument('name', None)
-		filename = os.path.basename(filename)
+		filename = os.path.basename(filename)+'.apk'
 		os.remove(os.path.join(self.apk_folder, filename))
 		# Update fdroid repo if asked
 		self.multiproc_update_fdroid()
-		self.redirect('page=list')
+		self.redirect('list')
 	
 	# Download the available apk from the server
 	def download_from_server(self):
 		filename = self.get_argument('name', None)
-		base_filename = os.path.basename(filename)
+		base_filename = os.path.basename(filename)+'.apk'
 		filename = os.path.join(self.apk_folder, base_filename)
 		buf_size = 4096
 		self.set_header('Content-Type', 'application/octet-stream')
@@ -152,6 +184,10 @@ class MainHandler(tornado.web.RequestHandler):
 						buff.write('Categories:'+self.fdroid_custom_category+'\n')
 					buff.close()
 
+	# Delete the extension of the given string
+	def kick_extension(self,apkfile):
+		return os.path.splitext(apkfile)[0]
+
 
 
 def default_params():
@@ -171,7 +207,7 @@ def check_config(config):
 	return True, "Success"
 
 def main():
-	global cli_args, config
+	global cli_args, config, cli
 	# Parsing CLI arguments
 	parser = argparse.ArgumentParser(description="A web interface for GPlayCli")
 	parser.add_argument('-c','--config',action='store',dest='CONFFILE',metavar="CONF_FILE",nargs=1,
@@ -205,6 +241,11 @@ def main():
 		(r"/static/", tornado.web.StaticFileHandler,
 		 dict(path=settings['static_path'])),
 	], **settings)
+
+	# Parsing conffile
+	cli = GPlaycli(cli_args.CONFFILE)
+	# Connect to API
+	cli.connect_to_googleplay_api()
 
 	application.listen(settings['port'],settings['ip'])
 	tornado.ioloop.IOLoop.current().start()
