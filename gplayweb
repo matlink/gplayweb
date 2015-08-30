@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys, os, traceback, ConfigParser, argparse, multiprocessing
 import tornado.ioloop, tornado.web
+import pkg_resources
 from gplaycli.gplaycli import GPlaycli
 
 
@@ -56,7 +57,10 @@ class MainHandler(tornado.web.RequestHandler):
 
 	# Templates
 	def get_template_path(self):
-		return os.path.dirname(os.path.abspath(__file__))+"/templates"
+		embedded = os.path.dirname(os.path.abspath(__file__))+"/templates"
+		deployed = '/usr/share/gplayweb/templates'
+		# Return the embedded templates if they exists, otherwise return deployed ones via setuptools
+		return embedded if os.path.isdir(embedded) else deployed
 
 	def render(self, mode, items, **kwargs):
 		super(MainHandler,self).render(mode+".html", title="GPlayWeb", ROOT=self.root_url, items=items, **kwargs)
@@ -211,8 +215,10 @@ def main():
 	# Parsing CLI arguments
 	parser = argparse.ArgumentParser(description="A web interface for GPlayCli")
 	parser.add_argument('-c','--config',action='store',dest='CONFFILE',metavar="CONF_FILE",nargs=1,
-			type=str,default=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf",
-			help="Use a different config file than gplayweb.conf")
+			type=str,
+#                        default=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf",
+                        default="/etc/gplayweb/gplayweb.conf",
+			help="Use a different config file than /etc/gplayweb/gplayweb.conf")
 	cli_args = parser.parse_args()
 	configparser = ConfigParser.ConfigParser()
 	configparser.read(cli_args.CONFFILE)
@@ -230,8 +236,9 @@ def main():
 		print errorString
 		return
 
+	static_path = "/usr/share/gplayweb/static" if os.path.isdir("/usr/share/gplayweb/static") else os.path.join(os.path.dirname(__file__), "static")
 	settings = {
-		"static_path": os.path.join(os.path.dirname(__file__), "static"),
+		"static_path": static_path,
 		"root_url": r""+config['root_url'],
 		"port": r""+config['port'],
 		"ip": r""+config['ip']
@@ -240,7 +247,7 @@ def main():
 		(settings['root_url'], MainHandler),
 		(r"/static/", tornado.web.StaticFileHandler,
 		 dict(path=settings['static_path'])),
-	], **settings)
+	],**settings)
 
 	# Parsing conffile
 	cli = GPlaycli(cli_args.CONFFILE)
