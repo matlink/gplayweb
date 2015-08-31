@@ -12,38 +12,39 @@
 
 . /lib/lsb/init-functions
 
-PROGRAM_HOME=/home/git/gplayweb
 PIDFILE=/tmp/gplayweb.pid
-PROG_NAME=gplayweb.py
-DAEMON=$PROGRAM_HOME/$PROG_NAME
-LOGFILE=/tmp/gplayweb.log
-CONFFILE=$PROGRAM_HOME/gplayweb.conf
+PROG_NAME=gplayweb
+DAEMON=$(which gplayweb)
+LOGDIR=/var/log/gplayweb
+LOGFILE=$LOGDIR/gplayweb.log
+CONFFILE=/etc/gplayweb/gplayweb.conf
 ARGUMENTS="-c $CONFFILE"
-USER=git
+USER=nobody
 # See how we were called.
 case "$1" in
   start)
         echo -n "Starting ${PROGRAM} ..."
         #### Commands to start the process running
-        cd $PROGRAM_HOME
+        mkdir -p $LOGDIR
         start-stop-daemon --start -c $USER --quiet --pidfile $PIDFILE --exec $DAEMON & >$LOGFILE 2>&1 -- $ARGUMENTS
-        echo $(pgrep -f $PROG_NAME) > $PIDFILE
+        sleep 1
+        pgrep -fl $PROG_NAME | grep python | awk '{print $1}'  > $PIDFILE
         echo
-        ;;
+        ;;  
   stop)
         echo -n "Shutting down $PROGRAM ..."
         kill -9 $(cat $PIDFILE)
         rm -f $PIDFILE
         echo
-        ;;
+        ;;  
   status)
         status_of_proc -p $PIDFILE "$PROG_NAME" "gplayweb" && exit 0 || exit $?
-        ;;
+        ;;  
   restart)
         $0 stop
         $0 start
-        ;;
-  *)
+        ;;  
+  *)  
         echo "Usage: $0 {start|stop|restart|status}"
         exit 1
 esac

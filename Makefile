@@ -29,5 +29,5 @@ gitpush:
 	git push origin master && git push github master
 clean:
 	$(PYTHON) setup.py clean
-	rm -rf build/ MANIFEST dist GPlayWeb.egg-info debian/{gplayweb,python-module-stampdir} debian/gplayweb.{debhelper.log,postinst.debhelper,prerm.debhelper,substvars} *.tar.gz* deb_dist
+	rm -rf build/ MANIFEST dist GPlayWeb.egg-info debian/{gplayweb,python-module-stampdir} debian/gplayweb.{debhelper.log,postinst.debhelper,prerm.debhelper,substvars} *.tar.gz* deb_dist srclibs
 	find . -name '*.pyc' -delete

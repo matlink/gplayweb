@@ -16,6 +16,7 @@ setup(name='GPlayWeb',
         scripts=['gplayweb'],
         data_files=[
             ['/etc/gplayweb/', ['gplayweb.conf.example']],
+            ['/etc/init.d/', ['init_script/gplayweb']],
             ['/usr/share/gplayweb/templates', templates],
             ['/usr/share/gplayweb/static/css', css],
             ['/usr/share/gplayweb/static/fonts', fonts],
