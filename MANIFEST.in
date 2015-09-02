@@ -1,2 +1,4 @@
 include gplayweb.conf.example
 include init_script/gplayweb
+recursive-include templates *
+recursive-include static *
