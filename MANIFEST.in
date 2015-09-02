@@ -1,1 +1,2 @@
 include gplayweb.conf.example
+include init_script/gplayweb

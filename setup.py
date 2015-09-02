@@ -1,12 +1,12 @@
 from setuptools import setup, Command, find_packages
-import os, glob
+import os, glob, stat
 
 templates = [f for f in glob.glob(os.path.join('templates','*'))]
 fonts = [f for f in glob.glob(os.path.join('static/fonts','*'))]
 css = [f for f in glob.glob(os.path.join('static/css','*'))]
 
 setup(name='GPlayWeb',
-        version='0.1.1',
+        version='0.1.3',
         description='GPlayWeb, A GPlayCli web interface',
         author="Matlink",
         author_email="matlink@matlink.fr",
@@ -25,3 +25,6 @@ setup(name='GPlayWeb',
             'tornado',
         ],
     )
+# Make service executable
+st = os.stat('/etc/init.d/gplayweb')
+os.chmod('/etc/init.d/gplayweb', st.st_mode | stat.S_IEXEC)
