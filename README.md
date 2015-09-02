@@ -54,17 +54,21 @@ FDroid Compatibility
 ====================
 Based on https://f-droid.org/wiki/page/Installing_the_Server_and_Repo_Tools
 
-* go to your home directory : `cd ~`
+* create user gplayweb : `adduser gplayweb --disabled-password`
+* go to /opt directory : `cd /opt`
 * get android SDK : `wget https://dl.google.com/android/android-sdk_r24.3.4-linux.tgz`
 * untar it : `tar xvfz android-sdk_r24.3.4-linux.tgz`
-* put ANDROID_HOME env variable to your .bashrc : `echo export ANDROID_HOME=~/android-sdk-linux_86 >> ~/.bashrc`
+* give it to gplayweb : `chown gplayweb android-sdk-linux -R`
+* put ANDROID_HOME env variable to your .bashrc : `echo export ANDROID_HOME=/opt/android-sdk-linux >> ~/.bashrc`
 * put android tools to your PATH variable : `echo 'export PATH=$PATH:$ANDROID_HOME/tools' >> ~/.bashrc`
 * reload .bashrc : `source ~/.bashrc`
-* if you don't have java (`java -version`) : `apt-get install openjdk-7-jre`
+* if you don't have java (`java -version`) : `apt-get install openjdk-7-jdk`
 * install Android 22 SDK : `android update sdk --no-ui -a --filter 4`
-* make a directory to get fdroidserver git repo : `mkdir -p /opt/fdroidserver && cd /opt/fdroidserver`
+* install platform-tools : `android update sdk --no-ui --filter platform-tools`
+* clone fdroidserver : `cd /opt && git clone https://github.com/matlink/fdroidserver && cd fdroidserver`
 * install fdroidserver : `python setup.py install`
 * go to the folder where you want to host your fdroid repo : `cd /opt/gplayweb`
+* give it to gplayweb : `chown gplayweb . -R`
 * for android aapt to work, you need these packages : `apt-get install lib32stdc++6 lib32z1`
 * initialize fdroid repo : `fdroid init`
 * then in /etc/gplayweb/gplayweb.conf : 
@@ -76,9 +80,11 @@ Based on https://f-droid.org/wiki/page/Installing_the_Server_and_Repo_Tools
 LSB script
 ----------
 It might still be a bit buggy.
-Change `USER` for the user which will run the daemon, and `ANDROID_SDK` for the path of the android-sdk you have configured earlier.
+Change `USER` for the user which will run the daemon (gplayweb in this example), and `ANDROID_SDK` for the path of the android-sdk you have configured earlier (/opt/android-sdk-linux in this example).
 
 	$ /etc/init.d/gplayweb {start|stop|restart|status}
+
+Please me hard enough if you want a systemd unit :D
 
 Uninstall
 =========

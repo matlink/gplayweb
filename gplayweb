@@ -15,7 +15,7 @@ class MainHandler(tornado.web.RequestHandler):
 		# Where apk are stored
 		self.apk_folder = config['folder']
 		if not os.path.isdir(self.apk_folder):
-			os.mkdir(self.apk_folder)
+			os.makedirs(self.apk_folder)
 		# Root of the HTTP URL
 		self.root_url = config['root_url']
 		self.cache_file = '/tmp/.cache-gplayweb'
@@ -222,7 +222,11 @@ def main():
 	cli_args = parser.parse_args()
 	configparser = ConfigParser.ConfigParser()
 	configparser.read(cli_args.CONFFILE)
-	config_list = configparser.items("Server")
+	try:
+		config_list = configparser.items("Server")
+	except ConfigParser.NoSectionError:
+		print("Error: [Server] section not found. Please make sure "+cli_args.CONFFILE+" exists and contains a [Server] section")
+		sys.exit(1)
 
 	# Get default params
 	config = default_params()

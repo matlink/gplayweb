@@ -19,14 +19,15 @@ LOGDIR=/var/log/gplayweb
 LOGFILE=$LOGDIR/gplayweb.log
 CONFFILE=/etc/gplayweb/gplayweb.conf
 ARGUMENTS="-c $CONFFILE"
-USER=nobody
+ANDROID_SDK=/opt/android-sdk-linux
+USER=gplayweb
 # See how we were called.
 case "$1" in
   start)
         echo -n "Starting ${PROGRAM} ..."
         #### Commands to start the process running
         mkdir -p $LOGDIR
-        start-stop-daemon --start -c $USER --quiet --pidfile $PIDFILE --exec $DAEMON & >$LOGFILE 2>&1 -- $ARGUMENTS
+        start-stop-daemon --start -c $USER --quiet --pidfile $PIDFILE --exec /usr/bin/env ANDROID_HOME=$ANDROID_SDK $DAEMON & >$LOGFILE 2>&1 -- $ARGUMENTS
         sleep 1
         pgrep -fl $PROG_NAME | grep python | awk '{print $1}'  > $PIDFILE
         echo

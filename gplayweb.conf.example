@@ -8,6 +8,6 @@ folder=/opt/gplayweb/repo
 root_url=/
 port=8888
 #ip=0.0.0.0
-#fdroid_repo_dir=/opt/gplayweb/repo
+#fdroid_repo_dir=/opt/gplayweb
 #fdroid_script_dir=/opt/fdroidserver
 #fdroid_custom_category=GPlayWeb
