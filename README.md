@@ -74,7 +74,9 @@ Based on https://f-droid.org/wiki/page/Installing_the_Server_and_Repo_Tools
 * then in /etc/gplayweb/gplayweb.conf : 
 	
 	folder=/opt/gplayweb/repo
+
 	fdroid_repo_dir=/opt/gplayweb
+
 	fdroid_script_dir=/opt/fdroidserver
 
 LSB script
