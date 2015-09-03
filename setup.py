@@ -15,7 +15,7 @@ fonts = [f for f in glob.glob(os.path.join('static/fonts','*'))]
 css = [f for f in glob.glob(os.path.join('static/css','*'))]
 
 setup(name='GPlayWeb',
-        version='0.1.3.2',
+        version='0.1.3.3',
         description='GPlayWeb, A GPlayCli web interface',
         author="Matlink",
         author_email="matlink@matlink.fr",
