@@ -14,7 +14,7 @@
 
 PIDFILE=/tmp/gplayweb.pid
 PROG_NAME=gplayweb
-DAEMON=$(which gplayweb)
+DAEMON=/usr/local/bin/gplayweb
 LOGDIR=/var/log/gplayweb
 LOGFILE=$LOGDIR/gplayweb.log
 CONFFILE=/etc/gplayweb/gplayweb.conf
