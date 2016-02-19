@@ -3,6 +3,7 @@
 import sys, os, traceback, ConfigParser, argparse, multiprocessing
 import tornado.ioloop, tornado.web
 import pkg_resources
+import json
 from gplaycli.gplaycli import GPlaycli
 
 
@@ -35,6 +36,7 @@ class MainHandler(tornado.web.RequestHandler):
 	# Routes
 	def get(self):
 		page = self.get_argument('page',None)
+                self.api  = self.get_argument('api' ,None)
 		if page == None:
 			self.redirect('list')
 		elif page == 'list':
@@ -53,6 +55,8 @@ class MainHandler(tornado.web.RequestHandler):
 			return
 
 	def redirect(self,url,permanent=False,status=None):
+                if self.api:
+                    url += '&api=true'
 		super(MainHandler,self).redirect(self.root_url+"?page="+url, permanent, status)
 
 	# Templates
@@ -63,6 +67,9 @@ class MainHandler(tornado.web.RequestHandler):
 		return embedded if os.path.isdir(embedded) else deployed
 
 	def render(self, mode, items, **kwargs):
+                if self.api:
+                    mode = 'api'
+                    items = json.dumps(items)
 		super(MainHandler,self).render(mode+".html", title="GPlayWeb", ROOT=self.root_url, items=items, **kwargs)
 	
 
