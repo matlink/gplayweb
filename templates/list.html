@@ -20,7 +20,7 @@
         {% for item in items %}
     		<tbody><tr>
     		{% for indice, detail in enumerate(items[item]) %}
-			<td>{% if indice == 5 %} <a target="_blank" href="https://play.google.com/store/apps/details?id={{detail}}"><span class="glyphicon glyphicon-link"></span></a>{% end %}{{ detail }}</td>
+			<td {% if indice==0 %} class="app-name" {% end %}>{% if indice == 5 %} <a target="_blank" href="https://play.google.com/store/apps/details?id={{detail}}"><span class="glyphicon glyphicon-link"></span></a>{% end %}{{ detail }}</td>
     		{% end %} 
     			<td><a href="{{ROOT}}?page=downloadfromserver&amp;name={{item}}"><span class="glyphicon glyphicon-download"></span></a></td>
     			<td><a href="{{ROOT}}?page=remove&amp;name={{item}}"><span class="glyphicon glyphicon-trash"></span></a></td>
