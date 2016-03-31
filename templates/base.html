@@ -12,7 +12,12 @@
          * Matlink & Co.
          *******************************************************************************
         -->
-	<link rel="stylesheet" href="{{ ROOT }}{{ static_url("css/bootstrap.min.css") }}" />
+	{% if ROOT=='/' %}
+		{{ ROOT_CSS='' }}
+	{% else %}
+		{{ ROOT_CSS=ROOT }}
+	{% end %}
+	<link rel="stylesheet" href="{{ ROOT_CSS }}{{ static_url("css/bootstrap.min.css") }}" />
     	<style>
         .form-horizontal{
             padding-top: 5px;
