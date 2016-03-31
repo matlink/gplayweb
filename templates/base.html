@@ -72,16 +72,20 @@
 	.app-name{
 		font-weight: bold;
 	}
+	.center-h2{ display: none; }
+
+	.navbar-fixed-top { text-align: center; }
+	.panel-heading { margin-top: 50px; }
 	}
 
    	</style>
 	</head>
 	<body>
         <header id="page_header">
-            <div class="navbar navbar-default">
+            <div class="navbar navbar-default navbar-fixed-top">
                 <h2 class="center-h2">GPlayWeb: A web interface for GPlayCli</h2>
                 <div class="container-fluid">
-                    <ul id="main-navbar" class="nav navbar-nav">
+                    <ul id="main-navbar" class="container-fluid nav navbar-nav">
 			    <li><a href="{{ROOT}}?page=list"><span class="glyphicon glyphicon-list"><span class="menu-name">  List</span></span></a></li>
 			    <li><a href="{{ROOT}}?page=search"><span class="glyphicon glyphicon-search"><span class="menu-name">  Search</span></span></a></li>
 			    <li><a href="{{ROOT}}?page=download"><span class="glyphicon glyphicon-download-alt"><span class="menu-name">  Download</span></span></a></li>
