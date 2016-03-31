@@ -1,3 +1,4 @@
 gplayweb.conf
 repo/
 .cache
+*.swp

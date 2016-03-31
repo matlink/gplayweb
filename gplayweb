@@ -241,6 +241,9 @@ def main():
 		return
 
 	static_path = "/usr/share/gplayweb/static" if os.path.isdir("/usr/share/gplayweb/static") else os.path.join(os.path.dirname(__file__), "static")
+        if config['root_url'] != '/':
+            static_path = os.path.join(config['root_url'],static_path)
+        print(static_path)
 	settings = {
 		"static_path": static_path,
 		"root_url": r""+config['root_url'],
