@@ -53,6 +53,7 @@ Usage
 FDroid Compatibility
 ====================
 Based on https://f-droid.org/wiki/page/Installing_the_Server_and_Repo_Tools
+python-imaging may be needed to update FDroid repository, don't forget to install it.
 
 * create user gplayweb : `adduser gplayweb --disabled-password`
 * go to /opt directory : `cd /opt`
