@@ -2,6 +2,7 @@
 <html lang="fr">
 	<head>
 		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <title>GPlayWeb</title>
         <!--
          *******************************************************************************
@@ -19,16 +20,59 @@
 	{% end %}
 	<link rel="stylesheet" href="{{ ROOT_CSS }}{{ static_url("css/bootstrap.min.css") }}" />
     	<style>
-        .form-horizontal{
-            padding-top: 5px;
-        }
-        .container{
-            padding: 0;
-        }
-        .center-h2{
-            text-align: center;
-        }
-    	</style>
+	 /* normal screen */
+	@media screen and (min-width: 801px) {
+		.form-horizontal{
+	            padding-top: 5px;
+	        }
+	        .container{
+	            padding: 0;
+	        }
+	        .center-h2{
+	            text-align: center;
+	        }
+	}
+	/* smart screen */
+	@media screen and (max-width: 640px) {
+		#main-navbar .menu-name {
+			display: none;
+		}
+		#main-navbar > li {
+			display: inline-block;
+		}
+		table, thead, tbody, th, td, tr { 
+			display: block; 
+		}
+		/* Hide table headers (but not display: none;, for accessibility) */
+	thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	tr { border: 1px solid #ccc; }
+	
+	td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50%; 
+	}
+	
+	td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	}
+
+   	</style>
 	</head>
 	<body>
         <header id="page_header">
@@ -36,10 +80,10 @@
                 <h2 class="center-h2">GPlayWeb: A web interface for GPlayCli</h2>
                 <div class="container-fluid">
                     <ul id="main-navbar" class="nav navbar-nav">
-                        <li><a href="{{ROOT}}?page=list"><span class="glyphicon glyphicon-list">  List</span></a></li>
-                        <li><a href="{{ROOT}}?page=search"><span class="glyphicon glyphicon-search">  Search</span></a></li>
-                        <li><a href="{{ROOT}}?page=download"><span class="glyphicon glyphicon-download-alt">  Download</span></a></li>
-                        <li><a href="{{ROOT}}?page=emptycache"><span class="glyphicon  glyphicon glyphicon-refresh">  Clear cache</span></a></li>
+			    <li><a href="{{ROOT}}?page=list"><span class="glyphicon glyphicon-list"><span class="menu-name">  List</span></span></a></li>
+			    <li><a href="{{ROOT}}?page=search"><span class="glyphicon glyphicon-search"><span class="menu-name">  Search</span></span></a></li>
+			    <li><a href="{{ROOT}}?page=download"><span class="glyphicon glyphicon-download-alt"><span class="menu-name">  Download</span></span></a></li>
+			    <li><a href="{{ROOT}}?page=emptycache"><span class="glyphicon  glyphicon glyphicon-refresh"><span class="menu-name">  Clear cache</span></span></a></li>
                     </ul>
                 </div>
             </div>
