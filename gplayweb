@@ -106,6 +106,7 @@ class MainHandler(tornado.web.RequestHandler):
 	# Search an apk by string
 	def search(self):
 		search_string = self.get_argument('name', None)
+		if not search_string is None : search_string = search_string.encode('utf8')
 		if search_string == None:
 			self.render('form_search', None)
 			return
