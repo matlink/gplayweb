@@ -14,22 +14,17 @@ After that, rename /etc/gplayweb/gplayweb.conf.example to /etc/gplayweb/gplayweb
 
 git method
 ----------
-It requires [GPlayCli](https://github.com/matlink/gplaycli), but will be added automatically if you clone this repo recursively.
 
-- Clone this repo recursively for submodules (gplaycli) : 
+- Clone this repo:
 
-		$ git clone https://github.com/matlink/gplayweb --recursive 
-
-- Install `gplaycli` requirements : 
-
-		$ pip install -r gplaycli/requirements.txt
+		$ git clone https://github.com/fxaguessy/gplayweb
 
 - Install `gplayweb` requirements with `pip` :
 	
 		$ pip install -r requirements.txt
 
 - Copy `gplayweb.conf.example` to `gplayweb.conf` and change the settings (you can comment unwanted lines out with #)
-- If you plan to add compatibility with F-Droid repo, ensure that you use [my fork of fdroidserver](https://github.com/matlink/fdroidserver) since the original, for now, doesn't support call from another Python script (it's only usable via command line)
+- If you plan to add compatibility with F-Droid repo, ensure to uncomment the two config variables `fdroid_repo_dir` and `fdroid_exec`.
 		
 
 Usage
@@ -61,19 +56,19 @@ python-imaging may be needed to update FDroid repository, don't forget to instal
 * if you don't have java (`java -version`) : `apt-get install openjdk-7-jdk`
 * install Android 22 SDK : `android update sdk --no-ui -a --filter 4`
 * install platform-tools : `android update sdk --no-ui --filter platform-tools`
-* clone fdroidserver : `cd /opt && git clone https://github.com/matlink/fdroidserver && cd fdroidserver`
-* install fdroidserver : `python setup.py install`
-* go to the folder where you want to host your fdroid repo : `cd /opt/gplayweb`
+* clone fdroidserver : `cd /opt && git clone https://gitlab.com/fdroid/fdroidserver.git && cd fdroidserver`
+* install fdroidserver : `sudo apt-get install fdroidserver`
+* go to the folder where you want to host your fdroid repo : `cd /opt/fdroid/`
 * give it to gplayweb : `chown gplayweb . -R`
 * for android aapt to work, you need these packages : `apt-get install lib32stdc++6 lib32z1`
 * initialize fdroid repo : `fdroid init`
 * then in /etc/gplayweb/gplayweb.conf : 
 	
-	folder=/opt/gplayweb/repo
+	folder=/opt/fdroid/repo
 
-	fdroid_repo_dir=/opt/gplayweb
+	fdroid_repo_dir=/opt/fdroid
 
-	fdroid_script_dir=/opt/fdroidserver
+	fdroid_exec=/usr/local/bin/fdroid
 
 LSB script
 ----------
