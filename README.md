@@ -1,7 +1,34 @@
 GPlayWeb: A Web interface for GPlayCli
 ======================================
 
-Original work of [@matlink](https://github.com/matlink) forked to use latest versions of fdroid and gplaycli.
+Original work of [@matlink](https://github.com/matlink) forked to use latest versions of fdroid and gplaycli and providing a Dockerfile for easy install.
+
+Docker install (gplayweb + fdroid)
+=================================
+
+First, [install docker](https://docs.docker.com/engine/installation/).
+
+Then, to use the last version of container on dockerhub:
+
+    docker run --name gplayweb -p 127.0.0.1:8888:8888 fxaguessy/gplayweb
+
+You can also build the container yourself
+
+    docker build -t gplayweb .
+
+Then run it
+
+    docker run --name gplayweb -p 127.0.0.1::8888:8888 gplayweb
+
+To preserve gplayweb and fdroid data, mount a local folder as docker volume:
+
+    docker run --name gplayweb -p 127.0.0.1:8888:8888 -v ~/fdroid/:/data/fdroid fxaguessy/gplayweb
+
+Then, you may want to expose your (static) fdroid repo using a nginx container
+
+    docker run --name fdroid-nginx -p 8080:80 -v ~/fdroid/repo:/usr/share/nginx/html:ro nginx
+
+As a result, you can access gplayweb on localhost and the fdroid repository on your.ip.address:8080.
 
 Installation (consider using a virtualenv)
 =========================================

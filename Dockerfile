@@ -31,9 +31,11 @@ RUN pip install -r requirements.txt
 
 # Install Android SDK and build tools 22
 WORKDIR /opt/
-RUN wget https://dl.google.com/android/android-sdk_r24.3.4-linux.tgz
-RUN echo "fb293d7bca42e05580be56b1adc22055d46603dd  android-sdk_r24.3.4-linux.tgz" | sha1sum -c
-RUN tar xzf android-sdk_r24.3.4-linux.tgz
+RUN wget https://dl.google.com/android/android-sdk_r24.3.4-linux.tgz \
+    && echo "fb293d7bca42e05580be56b1adc22055d46603dd  android-sdk_r24.3.4-linux.tgz" | sha1sum -c \
+    && tar xzf android-sdk_r24.3.4-linux.tgz \
+    && rm android-sdk_r24.3.4-linux.tgz
+
 ENV ANDROID_HOME=/opt/android-sdk-linux
 ENV PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 RUN echo 'y' | android update sdk --no-ui -a --filter platform-tools,build-tools-22.0.1,android-22
