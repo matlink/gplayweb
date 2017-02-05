@@ -4,9 +4,10 @@ android_ID=3d716411bf8bc802
 gmail_address=fdroidserver@gmail.com
 language=fr_FR
 [Server]
-folder=/opt/fdroid/repo
+folder=/data/fdroid/repo
 root_url=/
 port=8888
 ip=0.0.0.0
-#fdroid_repo_dir=/opt/fdroid
-#fdroid_exec=/usr/local/bin/fdroid
+fdroid_repo_dir=/data/fdroid/
+fdroid_exec=/usr/bin/fdroid
+#fdroid_custom_category=GPlayWeb
