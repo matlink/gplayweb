@@ -1,6 +1,8 @@
 GPlayWeb: A Web interface for GPlayCli
 ======================================
 
+Original work of [@matlink](https://github.com/matlink) forked to use latest versions of fdroid and gplaycli.
+
 Installation (consider using a virtualenv)
 =========================================
 For both methods, you'll need those packages

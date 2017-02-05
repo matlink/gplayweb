@@ -49,6 +49,8 @@ class MainHandler(tornado.web.RequestHandler):
 			self.download_from_server()
 		elif page == 'emptycache':
 			self.empty_cache()
+		elif page == 'fdroid-forceupdate':
+			self.fdroid_forceupdate()
 		else:
 			return
 
@@ -101,6 +103,10 @@ class MainHandler(tornado.web.RequestHandler):
 
 	def empty_cache(self):
 		os.remove(self.cache_file)
+		self.redirect('list')
+
+	def fdroid_forceupdate(self):
+		self.update_fdroid()
 		self.redirect('list')
 
 	# Search an apk by string
