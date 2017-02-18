@@ -4,6 +4,8 @@ import sys, os, traceback, ConfigParser, argparse, multiprocessing
 import tornado.ioloop, tornado.web
 import pkg_resources
 from gplaycli.gplaycli import GPlaycli
+from subprocess import Popen, PIPE
+import os.path
 
 
 # Main handler
@@ -22,12 +24,10 @@ class MainHandler(tornado.web.RequestHandler):
 
 		self.fdroid = False
 		# FDroid support is asked
-		if 'fdroid_repo_dir' in config:
+		if 'fdroid_exec' in config:
 			self.fdroid=True
+			self.fdroid_exec = config['fdroid_exec']
 			self.fdroid_repo_dir = config['fdroid_repo_dir']
-			self.fdroid_script_dir = config['fdroid_script_dir']
-			sys.path.append(self.fdroid_script_dir)
-			self.fdroid_update = __import__('fdroidserver.update', fromlist=['create_metadata_and_update'])
 			# If custom category is specified
 			if 'fdroid_custom_category' in config:
 				self.fdroid_custom_category = config['fdroid_custom_category']
@@ -49,6 +49,8 @@ class MainHandler(tornado.web.RequestHandler):
 			self.download_from_server()
 		elif page == 'emptycache':
 			self.empty_cache()
+		elif page == 'fdroid-forceupdate':
+			self.fdroid_forceupdate()
 		else:
 			return
 
@@ -64,7 +66,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 	def render(self, mode, items, **kwargs):
 		super(MainHandler,self).render(mode+".html", title="GPlayWeb", ROOT=self.root_url, items=items, **kwargs)
-	
+
 
 	# Core
 	# Show the list of downloaded apks
@@ -86,7 +88,7 @@ class MainHandler(tornado.web.RequestHandler):
 			if apk_name not in apks:
 				continue
 			infos.pop(0)
-			cached_infos[apk_name] = infos 
+			cached_infos[apk_name] = infos
 		apks = set(apks)-set(cached_infos.keys())
 		details = self.cli.get_bulk_details(apks)
 
@@ -101,6 +103,10 @@ class MainHandler(tornado.web.RequestHandler):
 
 	def empty_cache(self):
 		os.remove(self.cache_file)
+		self.redirect('list')
+
+	def fdroid_forceupdate(self):
+		self.update_fdroid()
 		self.redirect('list')
 
 	# Search an apk by string
@@ -125,7 +131,7 @@ class MainHandler(tornado.web.RequestHandler):
 		self.cli.set_download_folder(self.apk_folder)
 		self.cli.download_packages([package])
 		# Update fdroid repo if asked
-		self.multiproc_update_fdroid()
+		self.update_fdroid()
 		self.redirect('list')
 
 	# Remove the apk from the folder
@@ -134,9 +140,9 @@ class MainHandler(tornado.web.RequestHandler):
 		filename = os.path.basename(filename)+'.apk'
 		os.remove(os.path.join(self.apk_folder, filename))
 		# Update fdroid repo if asked
-		self.multiproc_update_fdroid()
+		self.update_fdroid()
 		self.redirect('list')
-	
+
 	# Download the available apk from the server
 	def download_from_server(self):
 		filename = self.get_argument('name', None)
@@ -153,29 +159,21 @@ class MainHandler(tornado.web.RequestHandler):
 				self.write(data)
 		self.finish()
 
-
-	def multiproc_update_fdroid(self):
-		queue = multiprocessing.Queue()
-		p = multiprocessing.Process(target=self.updateFdroidRepo)
-		p.start()
-
-	def updateFdroidRepo(self):
-		# If Fdroid not asked
-		if not self.fdroid:
-			return
-
-		# We change dir path cause Fdroid does not support
-		# remote update, it needs to be in the same folder
+	## Fdroid
+	def update_fdroid(self):
 		current_dir = os.path.dirname(os.path.realpath(__file__))
 		os.chdir(self.fdroid_repo_dir)
-		# We update fdroidserver repo
+
 		try:
-			self.fdroid_update.create_metadata_and_update()
-			self.customize_metadata()
-			self.fdroid_update.create_metadata_and_update()
+			process = Popen([self.fdroid_exec,"update","-c"], stdout=PIPE, stderr=PIPE)
+			stdout, stderr = process.communicate()
+			if process.returncode != 0:
+				sys.stderr.write("error while updating fdroid repository " + stderr)
+			else:
+				print("fdroid repository updated")
 		except:
 			traceback.print_exc(file=sys.stdout)
-		# We return to our original path
+
 		os.chdir(current_dir)
 
 	# Add custom category to downloaded apps
@@ -206,10 +204,24 @@ def default_params():
 	return config
 
 def check_config(config):
-	if ('fdroid_repo_dir' in config and 'fdroid_script_dir' not in config)\
-		or ('fdroid_script_dir' in config and 'fdroid_repo_dir' not in config):
-		return False, "Need to define both 'fdroid_repo_dir' and 'fdroid_script_dir' to support Fdroid server update! "
+	if ('fdroid_exec' in config and 'fdroid_repo_dir' not in config)\
+		or ('fdroid_repo_dir' in config and 'fdroid_exec' not in config):
+		return False, "Need to define both 'fdroid_exec' and 'fdroid_repo_dir' to support Fdroid server update! "
 	return True, "Success"
+
+def fdroid_init(fdroid_exec, fdroid_repo_dir):
+	if not os.path.isfile(fdroid_exec):
+		sys.stderr.write("fdroid executable not be found: '" + fdroid_exec + "'")
+
+	try:
+		process = Popen([fdroid_exec,"init"], stdout=PIPE, stderr=PIPE, cwd=fdroid_repo_dir)
+		stdout, stderr = process.communicate()
+		if process.returncode != 0:
+			sys.stderr.write("error while initializing fdroid repository " + stderr)
+		else:
+			print("fdroid repository initialized successfully in " + fdroid_repo_dir)
+	except:
+		traceback.print_exc(file=sys.stdout)
 
 def main():
 	global cli_args, config, cli
@@ -217,8 +229,8 @@ def main():
 	parser = argparse.ArgumentParser(description="A web interface for GPlayCli")
 	parser.add_argument('-c','--config',action='store',dest='CONFFILE',metavar="CONF_FILE",nargs=1,
 			type=str,
-#                        default=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf",
-                        default="/etc/gplayweb/gplayweb.conf",
+#						default=os.path.dirname(os.path.abspath(__file__))+"/gplayweb.conf",
+						default="/etc/gplayweb/gplayweb.conf",
 			help="Use a different config file than /etc/gplayweb/gplayweb.conf")
 	cli_args = parser.parse_args()
 	configparser = ConfigParser.ConfigParser()
@@ -242,9 +254,8 @@ def main():
 		return
 
 	static_path = "/usr/share/gplayweb/static" if os.path.isdir("/usr/share/gplayweb/static") else os.path.join(os.path.dirname(__file__), "static")
-        if config['root_url'] != '/':
-            static_path = os.path.join(config['root_url'],static_path)
-        print(static_path)
+	if config['root_url'] != '/':
+		static_path = os.path.join(config['root_url'],static_path)
 	settings = {
 		"static_path": static_path,
 		"root_url": r""+config['root_url'],
@@ -262,8 +273,15 @@ def main():
 	# Connect to API
 	cli.connect_to_googleplay_api()
 
+	# init fdroid repository, if necessary
+	if 'fdroid_exec' in config:
+		fdroid_init(config['fdroid_exec'], config['fdroid_repo_dir'])
+
+	print("starting gplayweb server, listening on " + settings['ip'] + ":"+ settings['port'])
+
 	application.listen(settings['port'],settings['ip'])
 	tornado.ioloop.IOLoop.current().start()
+
 
 if __name__ == "__main__":
 	main()
