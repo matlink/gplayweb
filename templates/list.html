@@ -17,9 +17,9 @@
             <th>Download from server</th>
             <th>Remove</th>
     	</tr></thead>
-        {% for item in items %}
+        {% for item in sorted(items.values(), key=lambda x: x[0]) %}
     		<tbody><tr>
-    		{% for indice, detail in enumerate(items[item]) %}
+    		{% for indice, detail in enumerate(item) %}
 			<td {% if indice==0 %} class="app-name" {% end %}>{% if indice == 5 %} <a target="_blank" href="https://play.google.com/store/apps/details?id={{detail}}"><span class="glyphicon glyphicon-link"></span></a>{% end %}{{ detail }}</td>
     		{% end %} 
     			<td><a href="{{ROOT}}?page=downloadfromserver&amp;name={{item}}"><span class="glyphicon glyphicon-download"></span></a></td>
