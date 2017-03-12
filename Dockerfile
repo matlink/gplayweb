@@ -3,7 +3,10 @@ MAINTAINER Francois-Xavier Aguessy <fxaguessy@users.noreply.github.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:guardianproject/ppa
+RUN apt-get update && apt-get install -y \
 	fdroidserver \
 	git \
 	lib32stdc++6 \
