@@ -10,7 +10,7 @@ First, [install docker](https://docs.docker.com/engine/installation/).
 
 Then, to use the last version of container on dockerhub:
 
-    docker run --name gplayweb -p 127.0.0.1:8888:8888 fxaguessy/gplayweb
+    docker run --name gplayweb -p 127.0.0.1:8888:8888 matlink/gplayweb
 
 You can also build the container yourself
 
@@ -22,7 +22,7 @@ Then run it
 
 To preserve gplayweb and fdroid data, mount a local folder as docker volume:
 
-    docker run --name gplayweb -p 127.0.0.1:8888:8888 -v ~/fdroid/:/data/fdroid fxaguessy/gplayweb
+    docker run --name gplayweb -p 127.0.0.1:8888:8888 -v ~/fdroid/:/data/fdroid matlink/gplayweb
 
 Then, you may want to expose your (static) fdroid repo using a nginx container
 
@@ -46,7 +46,7 @@ git method
 
 - Clone this repo:
 
-		$ git clone https://github.com/fxaguessy/gplayweb
+		$ git clone https://github.com/matlink/gplayweb
 
 - Install `gplayweb` requirements with `pip` :
 	
