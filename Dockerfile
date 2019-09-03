@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-MAINTAINER Francois-Xavier Aguessy <fxaguessy@users.noreply.github.com>
+MAINTAINER Matlink <matlink@matlink.fr>
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -17,8 +17,6 @@ RUN apt-get update && apt-get install -y \
 	libssl-dev \
 	libjpeg-dev \
 	locales \
-	python-dev \
-	python-pip \
 	python3 \
 	python3-pip \
 	openjdk-8-jdk \
@@ -40,7 +38,8 @@ RUN mkdir -p /data/fdroid/repo
 # Install gplayweb
 RUN git clone https://github.com/matlink/gplayweb.git /opt/gplayweb
 WORKDIR /opt/gplayweb
-RUN pip install -r requirements.txt
+RUN git checkout dev
+RUN pip3 install -r requirements.txt
 
 # Install Android SDK and build tools 22
 WORKDIR /opt/

@@ -3,6 +3,12 @@ gmail_password=zHbdWdWtvdQAfylf
 android_ID=3d716411bf8bc802
 gmail_address=fdroidserver@gmail.com
 language=fr_FR
+token=True
+token_url=https://matlink.fr/token/email/gsfid
+
+[Cache]
+token=~/.cache/gplaycli/token
+
 [Server]
 folder=/data/fdroid/repo
 root_url=/
