@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
 	libffi-dev \
 	libssl-dev \
 	libjpeg-dev \
+	locales \
 	python-dev \
 	python-pip \
 	python3 \
@@ -25,10 +26,19 @@ RUN apt-get update && apt-get install -y \
 	wget \
 	zlib1g-dev
 
+RUN apt-get clean
+
+RUN locale-gen en_US.UTF-8
+RUN echo -e "LC_ALL=en_US.UTF8\nLANG=en_US.UTF8\nLC_CTYPE=en_US.UTF8\nLC_COLLATE=en_US.UTF8" > /etc/default/locale
+RUN chmod 0755 /etc/default/locale
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
+
 RUN mkdir -p /data/fdroid/repo
 
 # Install gplayweb
-RUN git clone https://github.com/fxaguessy/gplayweb.git /opt/gplayweb
+RUN git clone https://github.com/matlink/gplayweb.git /opt/gplayweb
 WORKDIR /opt/gplayweb
 RUN pip install -r requirements.txt
 
