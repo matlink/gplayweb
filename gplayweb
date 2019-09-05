@@ -85,6 +85,8 @@ class MainHandler(tornado.web.RequestHandler):
 	def get_infos(self, apks):
 		apks = map(self.kick_extension, apks)
 		cached_infos = dict()
+		if not os.path.isfile(self.cache_file):
+			open(self.cache_file, 'w').close()
 		with open(self.cache_file, 'r') as cachefp:
 			try:
 				cached_infos = json.load(cachefp)
