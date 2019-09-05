@@ -1,13 +1,17 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-import sys, os, traceback, configparser, argparse, multiprocessing
-import tornado.ioloop, tornado.web
-import pkg_resources
-from gplaycli.gplaycli import GPlaycli
-import gplaycli.util as util
-from subprocess import Popen, PIPE
-import os.path
+import os
+import sys
 import json
+import argparse
+import traceback
+import configparser
+import tornado.web
+import tornado.ioloop
+import gplaycli.util as util
+
+from subprocess import Popen, PIPE
+from gplaycli.gplaycli import GPlaycli
 
 
 # Main handler
