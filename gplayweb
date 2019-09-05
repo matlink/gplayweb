@@ -286,9 +286,6 @@ def main():
 	# Parsing conffile
 	cli = GPlaycli(config_file=cli_args.CONFFILE)
 	# Connect to API
-	cli.token_enable = True
-	cli.token_url = cli.creds['token_url']
-	cli.token, cli.gsfid = cli.retrieve_token()
 	cli.connect()
 
 	# init fdroid repository, if necessary
