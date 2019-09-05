@@ -36,10 +36,9 @@ ENV LANGUAGE=en_US.UTF-8
 RUN mkdir -p /data/fdroid/repo
 
 # Install gplayweb
-RUN git clone https://github.com/matlink/gplayweb.git /opt/gplayweb
+COPY . /opt/gplayweb
 WORKDIR /opt/gplayweb
-RUN git checkout dev
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt --upgrade
 
 # Install Android SDK and build tools 22
 WORKDIR /opt/
