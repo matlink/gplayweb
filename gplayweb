@@ -7,6 +7,7 @@ from gplaycli.gplaycli import GPlaycli
 import gplaycli.util as util
 from subprocess import Popen, PIPE
 import os.path
+import json
 
 
 # Main handler
@@ -79,31 +80,22 @@ class MainHandler(tornado.web.RequestHandler):
 	# ask gplay api if infos are not cached
 	def get_infos(self, apks):
 		apks = map(self.kick_extension, apks)
-		separator = ";"
-		# Ensure the cache file exists
-		open(self.cache_file,'a+')
 		cached_infos = dict()
-		for line in open(self.cache_file).read().splitlines():
-			infos = line.split(separator)
-			apk_name = infos[0]
-			if apk_name not in apks:
-				continue
-			infos.pop(0)
-			cached_infos[apk_name] = infos
-		apks = set(apks)-set(cached_infos.keys())
-		if not apks:
-			return dict()
-		details = self.cli.api.bulkDetails(apks)
+		with open(self.cache_file, 'r') as cachefp:
+			try:
+				cached_infos = json.load(cachefp)
+			except json.decoder.JSONDecodeError:
+				print("Cache file for APK info is empty or corrupted.")
 
-		# buff = open(self.cache_file,'a')
-		# for apk in details:
-		# 	if details[apk][0]=='':
-		# 		details[apk][0]=apk
-		# 	buff.write(apk+separator+separator.join(details[apk]).encode('utf-8')+'\n')
-		# buff.close()
-		# cached_infos.update(details)
-		for apk in details:
-			cached_infos[apk['title']] = [
+		# apps details which are not in cache
+		uncached_apks = [apk for apk in apks if apk not in cached_infos]
+		# every apk info is in cache
+		if not uncached_apks:
+			return cached_infos
+
+		uncached_details = self.cli.api.bulkDetails(uncached_apks)
+		for apk in uncached_details:
+			cached_infos[apk['docId']] = [
 					apk['title'],
 					apk['author'],
 					util.sizeof_fmt(apk['installationSize'])
@@ -114,6 +106,8 @@ class MainHandler(tornado.web.RequestHandler):
 					apk['versionCode'],
 					"%.2f" % apk["aggregateRating"]["starRating"]
 					]
+		with open(self.cache_file, 'w') as cachefp:
+			json.dump(cached_infos, cachefp)
 		return cached_infos
 
 	def empty_cache(self):
