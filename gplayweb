@@ -93,7 +93,7 @@ class MainHandler(tornado.web.RequestHandler):
 		apks = set(apks)-set(cached_infos.keys())
 		if not apks:
 			return dict()
-		details = self.cli.api.get_details(apks)
+		details = self.cli.api.bulkDetails(apks)
 
 		# buff = open(self.cache_file,'a')
 		# for apk in details:
